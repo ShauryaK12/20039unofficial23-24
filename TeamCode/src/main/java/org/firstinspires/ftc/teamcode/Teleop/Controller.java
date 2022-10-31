@@ -60,7 +60,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
- */
+
 @TeleOp(name = "DriverControl_Pressme;)", group = "Wesley")
 //@Disabled  This way it will run on the robot
 public class Controller extends OpMode {
@@ -157,7 +157,9 @@ public class Controller extends OpMode {
         precisionControl();
         drivingControl();
 }
- f (gamepad1.left_trigger > 0) {
+//_________________________________________________________________________________Precision Control___________________________________________________________________________________________________________________________________________________
+public void precisionControl() {
+ if (gamepad1.left_trigger > 0) {
             //removed || gamepad2.left_trigger > 0)
             speedMod = .25;
             gamepad1.rumble(100);
@@ -170,12 +172,11 @@ public class Controller extends OpMode {
 
         } else {
             speedMod = 1;
-//            gamepad1.stopRumble();
-//            gamepad2.stopRumble();
+
 
         }
     }
-
+//________________________________________________Drive control____________________________________________________________________________________________________________________________________________
     public void drivingControl() {
         //gets controller input
         double r = Math.hypot(gamepad1.left_stick_y, gamepad1.left_stick_x);
@@ -194,137 +195,7 @@ public class Controller extends OpMode {
         wheelFR.setPower(-v2 * speedMod);
         wheelBL.setPower(v3 * speedMod);
         wheelBR.setPower(v4 * speedMod);
-    }
-
-    public void intakeControl() {
-        // if (intakeSensor.getState()) {
-        intakeLeft.setPower(0);
-        intakeRight.setPower(0);
-        //gamepad2.rumble(1000);
-        // }
-        // else{
-        if (gamepad2.left_bumper) {
-            intakeLeft.setPower(1);
-            intakeRight.setPower(1);
-        } else if (gamepad2.right_bumper) {
-            intakeLeft.setPower(-1);
-            intakeRight.setPower(-1);
-        } else {
-            intakeLeft.setPower(0);
-            intakeRight.setPower(0);
-        }
-    }
-
-    private void susanControl() {
-//            if (gamepad1.dpad_left || gamepad2.dpad_left) {
-//                susanWheel.setVelocity(945);
-//                telemetry.addData("Status", "dpad left");
-//            } else if (gamepad1.dpad_right || gamepad2.dpad_right) {
-//                susanWheel.setVelocity(-945);
-//                telemetry.addData("Status", "bumper right");
-//            } else {
-//                susanWheel.setVelocity(0);
-//                //susanWheel.setPower(0);  //disabled to stop conteractingg
-//
-//                if (gamepad1.left_bumper) {
-//                    susanWheel.setVelocity(6000);
-//                    telemetry.addData("Status", "dpad left");
-//                } else if (gamepad1.right_bumper) {
-//                    susanWheel.setVelocity(-6000);
-//                    telemetry.addData("Status", "bumper right");
-//                } else {
-//                    susanWheel.setVelocity(0);
-
-
-        if (gamepad1.dpad_left || gamepad2.dpad_left) {
-            susanWheel.setPower(susanWheel.getPower() + 0.007);
-            telemetry.addData("Status", "dpad left");
-        } else if (gamepad1.dpad_right || gamepad2.dpad_right) {
-            susanWheel.setPower(susanWheel.getPower() - 0.007);
-            telemetry.addData("Status", "bumper right");
-        } else {
-            susanWheel.setPower(0);  //disabled to stop conteractingg
-
-
-        }
-
-    }
-
-
-    private void forkliftControl() {
-
-        if ((gamepad1.dpad_up || gamepad2.dpad_up) && (armLevel < armLevelPosition.length - 1) && (getRuntime() - previousRunTime >= inputDelayInSeconds)) {
-            rumbleLevel = true;
-            previousRunTime = getRuntime();
-            armLevel++;
-        }
-        if ((gamepad1.dpad_down || gamepad2.dpad_down) && (armLevel > 0) && (getRuntime() - previousRunTime >= inputDelayInSeconds)) {
-            rumbleLevel = true;
-            previousRunTime = getRuntime();
-            armLevel--;
-
-
-        }
-
-        //sets to driving level
-        if (gamepad1.y || gamepad2.y) {
-            armLevel = 1;
-        }
-
-        armSlide.setVelocity(1000);
-        if (armLevel == 1) {
-            armSlide.setVelocity(2000);
-            //if statement to set speed only going down
-        }
-
-        if (getRuntime() - previousRunTime >= inputDelayInSeconds + .25 && rumbleLevel) {
-            rumbleLevel = false;
-        }
-        armSlide.setTargetPosition(armLevelPosition[armLevel]);
-        armSlide.setTargetPositionTolerance(armLevelPosition[armLevel]);
-
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-
-    private void tapething() {
-
-
-        updown.setPower(gamepad2.left_stick_y *.25); //may need to put - in front if directin is flipped
-        leftright.setPower(gamepad2.right_stick_x *.15);
-        Outin.setPower(-gamepad2.left_trigger + gamepad2.right_trigger); //change the plus and - around if direction is flipped
-
-
-
-
-
-//        if (gamepad2.left_stick_y > .1) ;
-//        updown.setPower(.5);
-//
-//
-//        if (gamepad2.left_stick_x > .1) ;
-//        leftright.setPower(.5);
-//
-//        Outin.setPower(-gamepad2.left_trigger + gamepad2.right_trigger);
-
-
-//        if (gamepad2.left_stick_y < .5) {
-//            updown.setPower(1);
-//        } else
-//            updown.setPower(0);
-//
-//
-//        }
-
-
-    }
-
+    }//______________________________________________________________________________________________________________________________Removes errors__________________________________________________________________________________________
     public static void wait(int ms) {
         try {
             Thread.sleep(ms); //core java delay command
@@ -332,10 +203,9 @@ public class Controller extends OpMode {
             Thread.currentThread().interrupt(); //this exception is useful to remove the glitches and errors of the thread.sleep()
         }
     }
-
+//______________________________________________________________________________________________________________________________Stop Code______________________________________________________________________________________________
     //@Override
-    void Stop() {
-        armSlide.setTargetPosition(0);
+    void Stop(){
     }
 
 }
