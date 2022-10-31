@@ -157,7 +157,7 @@ public class Controller extends OpMode {
         precisionControl();
         drivingControl();
 }
-       if (gamepad1.left_trigger > 0) {
+ f (gamepad1.left_trigger > 0) {
             //removed || gamepad2.left_trigger > 0)
             speedMod = .25;
             gamepad1.rumble(100);
