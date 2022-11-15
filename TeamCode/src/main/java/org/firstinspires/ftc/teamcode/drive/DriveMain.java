@@ -33,6 +33,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -54,7 +55,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove ~or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Drive Main", group="Isaiah")
+@TeleOp(name="Main Driver", group="Isaiah")
 //@Disabled  This way it will run on the robot
 public class DriveMain extends OpMode {
     // Declare OpMode members.
@@ -73,11 +74,10 @@ public class DriveMain extends OpMode {
     private DcMotorEx wheelFR;
     private DcMotorEx wheelBL;
     private DcMotorEx wheelBR;
-    private DcMotorEx arm;
     private Servo wheel;
     private Servo stinger;
 
-    private DcMotorEx motorArm;
+    private DcMotor motorArm;
     private double maxTicsPerSec = 3000;
     private int targetPosition;
     private DigitalChannel armMagnet;
@@ -112,27 +112,21 @@ public class DriveMain extends OpMode {
         wheelFR = hardwareMap.get(DcMotorEx.class, "wheelFR");
         wheelBL = hardwareMap.get(DcMotorEx.class, "wheelBL");
         wheelBR = hardwareMap.get(DcMotorEx.class, "wheelBR");
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        distanceR = hardwareMap.get(Rev2mDistanceSensor.class, "distanceR");
-        distanceL = hardwareMap.get(Rev2mDistanceSensor.class, "distanceL");
-        distanceB = hardwareMap.get(Rev2mDistanceSensor.class, "distanceB");
+        //arm = hardwareMap.get(DcMotorEx.class, "arm");
 
         wheel = hardwareMap.get(Servo.class,"wheel");
         stinger = hardwareMap.get(Servo.class,"stinger");
 
-        motorArm = hardwareMap.get(DcMotorEx.class, "arm");
-        motorArm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        motorArm = hardwareMap.get(DcMotor.class, "arm");
+        motorArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorArm.setDirection(DcMotorSimple.Direction.FORWARD);
-        motorArm.setVelocityPIDFCoefficients(1.17, 0.117, 0, 11.7);
-        armMagnet = hardwareMap.get(DigitalChannel.class, "magneticSlide");
-        armMagnet.setMode(DigitalChannel.Mode.INPUT);
 //        this.armZeroOverride = false;
-//        this.armLevelFloor = 10;
+        this.armLevel1st = 10;
 //        this.armLevelRide = 500;
 //        this.armLevelCanTilt = 1340;
-//        this.armLevel2nd = 1650;
-//        this.armLevel3rd = 2200;
-//        this.armLevel4 = 2200;
+        this.armLevel2nd = 1650;
+        this.armLevel3rd = 2200;
+        this.armLevel4 = 2200;
         this.targetPosition = 0;
         this.buttonPressed = "";
 
@@ -149,7 +143,7 @@ public class DriveMain extends OpMode {
         wheelFR.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         wheelBL.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         wheelBR.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        //arm.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -158,7 +152,7 @@ public class DriveMain extends OpMode {
         wheelFR.setDirection(DcMotorSimple.Direction.REVERSE);
         wheelBL.setDirection(DcMotorSimple.Direction.FORWARD);
         wheelBR.setDirection(DcMotorSimple.Direction.REVERSE);
-        arm.setDirection(DcMotorSimple.Direction.FORWARD);
+       // arm.setDirection(DcMotorSimple.Direction.FORWARD);
         ppPos = 1.0;
 
 
@@ -226,7 +220,7 @@ public class DriveMain extends OpMode {
             //telemetry.addData("position of servo", "%.1f", position);
             wheel.setPosition(wheel.getPosition()+0.01);
         }
-        else if (gamepad2.dpad_right && (motorArm.getCurrentPosition() >= armLevelCanTilt)) {
+        else if (gamepad2.dpad_right) {
             // Keep stepping down until we hit the min value.
             //  telemetry.addData("position of servo", "%.1f", position);
             wheel.setPosition(wheel.getPosition()-0.01);
@@ -259,11 +253,11 @@ public class DriveMain extends OpMode {
 
         //change the power for each wheel
 
-        wheelFL.setPower(v1 * (0.5 + gamepad1.right_trigger));
-        wheelFR.setPower(v2 * -(0.5 + gamepad1.right_trigger));
-        wheelBL.setPower(v3 * (0.5 + gamepad1.right_trigger));
-        wheelBR.setPower(v4 * -(0.5 + gamepad1.right_trigger));
-        arm.setPower(armPower);
+        wheelFL.setPower(gamepad1.x ? v1 * 0.5 : v1);
+        wheelFR.setPower(gamepad1.x ? v2 * 0.5 : v2);
+        wheelBL.setPower(gamepad1.x ? v3 * 0.5 : v3);
+        wheelBR.setPower(gamepad1.x ? v4 * 0.5 : v4);
+       //   ` arm.setPower(armPower);
 
 
         /*
@@ -301,26 +295,21 @@ public class DriveMain extends OpMode {
                 Keep the target position >= 0
                 Unless dpad_down is pressed
              */
-        if (arm.getCurrentPosition() == 0 && gamepad2.dpad_down){
-            targetPosition -= 10;
-        }
+
 
             /*
                 check if magnet is touching sensor
                 True = NOT touching sensor
              */
-        if (!armMagnet.getState()){ //not sure why it's backwards
-            motorArm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        }
+
 
 
         //set motor
         motorArm.setTargetPosition(targetPosition);
         motorArm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        motorArm.setVelocity(maxTicsPerSec);
+        motorArm.setPower(maxTicsPerSec);
 
         telemetry.addData("Arm Button: ", buttonPressed);
-        telemetry.addData("At Arm Magnet: ", !armMagnet.getState());
         telemetry.addData("Can turn servo: ", motorArm.getCurrentPosition() >= armLevelCanTilt);
         telemetry.addData("Arm targetPosition: ", targetPosition);
         telemetry.addData("Arm currentPosition: ", motorArm.getCurrentPosition());

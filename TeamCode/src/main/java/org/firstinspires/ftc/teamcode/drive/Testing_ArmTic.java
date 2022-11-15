@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drive;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -96,10 +96,7 @@ public class Testing_ArmTic extends OpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        lazyS = hardwareMap.get(DcMotorEx.class, "lazyS");
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        bucket = hardwareMap.get(Servo.class,"bucket");
+       // arm = hardwareMap.get(DcMotorEx.class, "arm");
 
         motorArm = hardwareMap.get(DcMotorEx.class, "arm");
         motorArm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -116,15 +113,13 @@ public class Testing_ArmTic extends OpMode {
            It will now run with range from -1.0 to 1.0
            See Documentation for other encoder modes
            https://docs.revrobotics.com/rev-control-system/programming/using-encoder-feedback
+
         */
-        lazyS.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        intake.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         arm.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         arm.setDirection(DcMotorSimple.Direction.FORWARD);
         position = 1.0;
 
