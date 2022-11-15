@@ -117,8 +117,8 @@ public class DriveMain extends OpMode {
         wheel = hardwareMap.get(Servo.class,"wheel");
         stinger = hardwareMap.get(Servo.class,"stinger");
 
-        motorArm = hardwareMap.get(DcMotor.class, "arm");
-        motorArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorArm = hardwareMap.get(DcMotorEx.class, "arm");
+        motorArm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         motorArm.setDirection(DcMotorSimple.Direction.FORWARD);
 //        this.armZeroOverride = false;
         this.armLevel1st = 10;
